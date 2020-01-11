@@ -1,45 +1,23 @@
 pipeline {
-  agent any
-  stages {
-    stage('build') {
-      parallel {
-        stage('build') {
-          steps {
-            sh 'echo "hey am build stage"'
-          }
+    agent {
+        docker {
+            image 'node:6-alpine'
+            args '-p 3000:3000 -p 5000:5000' 
         }
-
-        stage('build123') {
-          steps {
-            sh 'echo "build123"'
-          }
-        }
-
-      }
     }
-
-    stage('stage') {
-      parallel {
-        stage('stage') {
-          steps {
-            sh 'echo "how are you"'
-          }
-        }
-
-        stage('stage1') {
-          steps {
-            sh 'echo "stage1"'
-          }
-        }
-
-      }
+    environment {
+        CI = 'true'
     }
-
-    stage('deploy') {
-      steps {
-        sh 'echo "this is awesome"'
-      }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh './jenkins/scripts/test.sh'
+            }
+        }
     }
-
-  }
 }
